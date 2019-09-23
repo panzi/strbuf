@@ -36,7 +36,6 @@ ifeq ($(TARGET),win64)
 else
 ifeq ($(TARGET),linux32)
 	CFLAGS=$(POSIX_CFLAGS)
-	BINEXT=-linux-i686
 	ARCH_FLAGS=-m32
 else
 ifeq ($(TARGET),linux64)
@@ -46,12 +45,12 @@ else
 ifeq ($(TARGET),darwin32)
 	CC=clang
 	CFLAGS=$(POSIX_CFLAGS)
-	ARCH_FLAGS=-m32
+	ARCH_FLAGS=-m32 -target i386-apple-darwin-macho
 else
 ifeq ($(TARGET),darwin64)
 	CC=clang
 	CFLAGS=$(POSIX_CFLAGS)
-	ARCH_FLAGS=-m64
+	ARCH_FLAGS=-m64 -target x86_64-apple-darwin-macho
 endif
 endif
 endif
