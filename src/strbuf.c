@@ -184,8 +184,8 @@ int strbuf_append_char(strbuf_t *buf, char ch) {
 	return 0;
 }
 
-int strbuf_append_slice(strbuf_t *buf, const char *str, size_t count) {
-	size_t len = strnlen(str, count);
+int strbuf_append_slice(strbuf_t *buf, const char *str, size_t size) {
+	size_t len = strnlen(str, size);
 	if (len >= SIZE_MAX) {
 		return ERANGE;
 	}
@@ -204,7 +204,7 @@ int strbuf_append_slice(strbuf_t *buf, const char *str, size_t count) {
 int strbuf_printf(strbuf_t *buf, const char *format, ...) {
 	va_list ap;
 	va_start(ap, format);
-	int errnum = strbuf_vpritnf(buf, format, ap);
+	int errnum = strbuf_vprintf(buf, format, ap);
 	va_end(ap);
 	return errnum;
 }
@@ -216,8 +216,8 @@ int strbuf_vprintf(strbuf_t *buf, const char *format, va_list ap) {
 		int errnum = errno;
 		return errnum ? errnum : EINVAL;
 	}
-	if (size > remaining_capacity) {
-		if (size == SIZE_MAX || buf->used >= SIZE_MAX - size - 1) {
+	if ((size_t)size > remaining_capacity) {
+		if ((size_t)size == SIZE_MAX || buf->used >= SIZE_MAX - size - 1) {
 			return ERANGE;
 		}
 		int errnum = strbuf_ensure_capacity(buf, buf->used + size + 1);
@@ -225,14 +225,16 @@ int strbuf_vprintf(strbuf_t *buf, const char *format, va_list ap) {
 			return errnum;
 		}
 		int size2 = vsnprintf(buf->data, buf->capacity - buf->used, format, ap);
+		(void)size2;
 		assert(size2 == size);
 		buf->used += size;
-	} else if (size == remaining_capacity) {
+	} else if ((size_t)size == remaining_capacity) {
 		if (buf->capacity >= SIZE_MAX - 1) {
 			return ERANGE;
 		}
 		return strbuf_ensure_capacity(buf, buf->capacity + 1);
 	}
+	buf->used += size;
 	return 0;
 }
 
@@ -259,7 +261,8 @@ char *strbuf_into_str(strbuf_t *buf) {
 			str = buf->data;
 		}
 	} else if (buf->used == SIZE_MAX) {
-		return ERANGE;
+		errno = ERANGE;
+		return NULL;
 	} else {
 		str = realloc(buf->data, buf->used + 1);
 		if (!str) {

@@ -70,8 +70,8 @@ int sstrbuf_append_char(sstrbuf_t *buf, char ch) {
 	return 0;
 }
 
-int sstrbuf_append_slice(sstrbuf_t *buf, const char *str, size_t count) {
-	size_t len = strnlen(str, count);
+int sstrbuf_append_slice(sstrbuf_t *buf, const char *str, size_t size) {
+	size_t len = strnlen(str, size);
 	if (len >= buf->capacity) {
 		return ERANGE;
 	}
@@ -86,7 +86,7 @@ int sstrbuf_append_slice(sstrbuf_t *buf, const char *str, size_t count) {
 int sstrbuf_printf(sstrbuf_t *buf, const char *format, ...) {
 	va_list ap;
 	va_start(ap, format);
-	int errnum = sstrbuf_vpritnf(buf, format, ap);
+	int errnum = sstrbuf_vprintf(buf, format, ap);
 	va_end(ap);
 	return errnum;
 }
@@ -98,9 +98,10 @@ int sstrbuf_vprintf(sstrbuf_t *buf, const char *format, va_list ap) {
 		int errnum = errno;
 		return errnum ? errnum : EINVAL;
 	}
-	if (size >= remaining_capacity) {
+	if ((size_t)size >= remaining_capacity) {
 		return ERANGE;
 	}
+	buf->used += size;
 	return 0;
 }
 

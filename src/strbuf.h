@@ -19,6 +19,32 @@ extern "C" {
 #  define STRBUF_ATTRIBUTE(x) /* nothing */
 #endif
 
+#if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+  #ifdef WIN_EXPORT
+    // Exporting...
+    #ifdef __GNUC__
+      #define STRBUF_EXPORT __attribute__ ((dllexport))
+    #else
+      #define STRBUF_EXPORT __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
+    #endif
+  #else
+    #ifdef __GNUC__
+      #define STRBUF_EXPORT __attribute__ ((dllimport))
+    #else
+      #define STRBUF_EXPORT __declspec(dllimport) // Note: actually gcc seems to also supports this syntax.
+    #endif
+  #endif
+  #define STRBUF_PRIVATE
+#else
+  #if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+    #define STRBUF_EXPORT __attribute__ ((visibility ("default")))
+    #define STRBUF_PRIVATE __attribute__ ((visibility ("hidden")))
+  #else
+    #define STRBUF_EXPORT
+    #define STRBUF_PRIVATE
+  #endif
+#endif
+
 typedef struct strbuf_s {
    size_t  capacity;
    size_t  used;
@@ -27,25 +53,25 @@ typedef struct strbuf_s {
 
 #define STRBUF_INIT_CAPACITY 256
 
-strbuf_t strbuf_new();
-strbuf_t strbuf_with_capacity(size_t capacity);
-strbuf_t strbuf_from_str(const char *str);
-strbuf_t strbuf_clone(const strbuf_t *buf);
+STRBUF_EXPORT strbuf_t strbuf_new();
+STRBUF_EXPORT strbuf_t strbuf_with_capacity(size_t capacity);
+STRBUF_EXPORT strbuf_t strbuf_from_str(const char *str);
+STRBUF_EXPORT strbuf_t strbuf_clone(const strbuf_t *buf);
 
-void strbuf_clear(strbuf_t *buf);
-int strbuf_resize(strbuf_t *buf, size_t size);
-int strbuf_ensure_capacity(strbuf_t *buf, size_t capacity);
-int strbuf_fill(strbuf_t *buf, size_t count, char ch);
-int strbuf_append_char(strbuf_t *buf, char ch);
-int strbuf_append(strbuf_t *buf, const char *str);
-int strbuf_append_slice(strbuf_t *buf, const char *str, size_t count);
-int strbuf_printf(strbuf_t *buf, const char *format, ...) STRBUF_ATTRIBUTE(( format( printf, 2, 3 ) ));
-int strbuf_vprintf(strbuf_t *buf, const char *format, va_list ap) STRBUF_ATTRIBUTE(( format( printf, 2, 0 ) ));
-const char *strbuf_as_str(const strbuf_t *buf);
-char *strbuf_to_str(const strbuf_t *buf);
-char *strbuf_into_str(strbuf_t *buf);
+STRBUF_EXPORT void strbuf_clear(strbuf_t *buf);
+STRBUF_EXPORT int strbuf_resize(strbuf_t *buf, size_t size);
+STRBUF_EXPORT int strbuf_ensure_capacity(strbuf_t *buf, size_t capacity);
+STRBUF_EXPORT int strbuf_fill(strbuf_t *buf, size_t count, char ch);
+STRBUF_EXPORT int strbuf_append_char(strbuf_t *buf, char ch);
+STRBUF_EXPORT int strbuf_append(strbuf_t *buf, const char *str);
+STRBUF_EXPORT int strbuf_append_slice(strbuf_t *buf, const char *str, size_t size);
+STRBUF_EXPORT int strbuf_printf(strbuf_t *buf, const char *format, ...) STRBUF_ATTRIBUTE(( format( printf, 2, 3 ) ));
+STRBUF_EXPORT int strbuf_vprintf(strbuf_t *buf, const char *format, va_list ap) STRBUF_ATTRIBUTE(( format( printf, 2, 0 ) ));
+STRBUF_EXPORT const char *strbuf_as_str(const strbuf_t *buf);
+STRBUF_EXPORT char *strbuf_to_str(const strbuf_t *buf);
+STRBUF_EXPORT char *strbuf_into_str(strbuf_t *buf);
 
-void strbuf_free(strbuf_t *buf);
+STRBUF_EXPORT void strbuf_free(strbuf_t *buf);
 
 #ifdef __cplusplus
 } // extern "C"

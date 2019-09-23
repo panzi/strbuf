@@ -9,10 +9,9 @@ or similar.
 TODO
 ----
 
-* Build-System
-* Tests
-* Examples
 * Documentation
+* Tests
+* More Examples
 
 MIT License
 -----------
