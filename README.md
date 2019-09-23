@@ -1,17 +1,19 @@
 STRBUF
 ======
 
-A very simple string buffer for C so you don't need to use `strncat()`/`strlcat()`
-or similar.
+You *have* to use C and you're annoyed by all the footguns that are still left
+even with `strncat()` and `strlcat()`? Well, here is a small string buffer
+implementation for C that might help with that.
 
-**Note:** This is currently untested. Don't yet use.
+**Note:** This currently has no tests. Don't use it *yet*.
 
 TODO
 ----
 
 * Documentation
 * Tests
-* More Examples
+* More examples
+* Extras for reading lines from a file or reading a whole file
 
 MIT License
 -----------
