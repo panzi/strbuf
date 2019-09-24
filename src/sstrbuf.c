@@ -31,21 +31,13 @@ int sstrbuf_fill(sstrbuf_t *buf, size_t count, char ch) {
 	return 0;
 }
 
-int sstrbuf_resize(sstrbuf_t *buf, size_t size) {
-	if (size >= buf->capacity) {
+int sstrbuf_truncate(sstrbuf_t *buf, size_t size) {
+	if (size > buf->used) {
 		return ERANGE;
 	}
-	if (size <= buf->used) {
-		buf->used = size;
-		return 0;
-	} else if (buf->used >= buf->capacity - size) {
-		return ERANGE;
-	} else {
-		size_t oldsize = buf->used;
-		memset(buf->data + oldsize, 0, size - oldsize);
-		buf->used += size;
-		return 0;
-	}
+
+	buf->used = size;
+	return 0;
 }
 
 int sstrbuf_append(sstrbuf_t *buf, const char *str) {

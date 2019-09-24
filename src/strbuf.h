@@ -45,21 +45,81 @@ extern "C" {
   #endif
 #endif
 
+/**
+ * @brief String buffer data structure.
+ * 
+ */
 typedef struct strbuf_s {
-   size_t  capacity;
-   size_t  used;
-   char   *data;
+   size_t  capacity; ///< capacity of of buffer
+   size_t  used;     ///< number of bytes used
+   char   *data;     ///< buffer. might be NULL if capacity is 0
 } strbuf_t;
 
 #define STRBUF_INIT_CAPACITY 256
 
+/**
+ * @brief Create a new string buffer.
+ *
+ * This function creates a new string buffer and allocates a buffer
+ * of the size STRBUF_INIT_CAPACITY. If memory allocation fails the data
+ * field will be NULL and errno will be set accordingly.
+ *
+ * @return a new string buffer
+ */
 STRBUF_EXPORT strbuf_t strbuf_new();
+
+/**
+ * @brief Create a new string buffer with given initial capacity.
+ *
+ * This function creates a new string buffer and allocates a buffer
+ * of the size capacity. If memory allocation fails the data
+ * field will be NULL and errno will be set accordingly.
+ *
+ * @param capacity the size of the buffer to allocate
+ * @return a new string buffer
+ */
 STRBUF_EXPORT strbuf_t strbuf_with_capacity(size_t capacity);
+
+/**
+ * @brief Create a new string buffer from a given string.
+ * 
+ * The new string buffer will have a buffer big enough to hold the given string
+ * plus a terminating NUL byte. If memory allocation fails the data
+ * field will be NULL and errno will be set accordingly.
+ * 
+ * @param str the initial string to fill the buffer with
+ * @return a new string buffer
+ */
 STRBUF_EXPORT strbuf_t strbuf_from_str(const char *str);
+
+/**
+ * @brief Clone the given string buffer.
+ *
+ * Create a new string buffer as a copy from buf. If memory allocation fails
+ * the data field will be NULL and errno will be set accordingly.
+ *
+ * @param buf a string buffer
+ * @return a new string buffer
+ */
 STRBUF_EXPORT strbuf_t strbuf_clone(const strbuf_t *buf);
 
+/**
+ * @brief Set the used field to 0.
+ * 
+ * @param buf 
+ */
 STRBUF_EXPORT void strbuf_clear(strbuf_t *buf);
-STRBUF_EXPORT int strbuf_resize(strbuf_t *buf, size_t size);
+
+/**
+ * @brief Shrink buffer to used + 1.
+ * 
+ * @param buf 
+ * @return 0 on success, ERANGE if used == SIZE_MAX, ENOMEM if realloc() failed
+ */
+STRBUF_EXPORT int strbuf_shrink(strbuf_t *buf);
+
+STRBUF_EXPORT int strbuf_truncate(strbuf_t *buf, size_t size);
+
 STRBUF_EXPORT int strbuf_ensure_capacity(strbuf_t *buf, size_t capacity);
 STRBUF_EXPORT int strbuf_fill(strbuf_t *buf, size_t count, char ch);
 STRBUF_EXPORT int strbuf_append_char(strbuf_t *buf, char ch);

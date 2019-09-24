@@ -45,6 +45,10 @@ extern "C" {
   #endif
 #endif
 
+/**
+ * @brief 
+ * 
+ */
 typedef struct sstrbuf_s {
    size_t  capacity;
    size_t  used;
@@ -59,7 +63,7 @@ SSTRBUF_EXPORT sstrbuf_t sstrbuf_new(char *data, size_t capacity);
 	sstrbuf_t NAME = sstrbuf_new(_ ## NAME ## _data, (SIZE));
 
 SSTRBUF_EXPORT void sstrbuf_clear(sstrbuf_t *buf);
-SSTRBUF_EXPORT int sstrbuf_resize(sstrbuf_t *buf, size_t size);
+SSTRBUF_EXPORT int sstrbuf_truncate(sstrbuf_t *buf, size_t size);
 SSTRBUF_EXPORT int sstrbuf_fill(sstrbuf_t *buf, size_t count, char ch);
 SSTRBUF_EXPORT int sstrbuf_append_char(sstrbuf_t *buf, char ch);
 SSTRBUF_EXPORT int sstrbuf_append(sstrbuf_t *buf, const char *str);
