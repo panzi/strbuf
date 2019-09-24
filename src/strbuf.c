@@ -243,7 +243,7 @@ int strbuf_vprintf(strbuf_t *buf, const char *format, va_list ap) {
 		assert(size2 == size);
 		buf->used += size2;
 	} else if ((size_t)size == remaining_capacity) {
-		if (buf->capacity >= SIZE_MAX - 1) {
+		if (buf->capacity >= SIZE_MAX) {
 			return ERANGE;
 		}
 		// Format was written, except the terminating NUL had no room.
