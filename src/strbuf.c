@@ -240,9 +240,8 @@ int strbuf_vprintf(strbuf_t *buf, const char *format, va_list ap) {
 			return errnum;
 		}
 		int size2 = vsnprintf(buf->data, buf->capacity - buf->used, format, ap);
-		(void)size2;
 		assert(size2 == size);
-		buf->used += size;
+		buf->used += size2;
 	} else if ((size_t)size == remaining_capacity) {
 		if (buf->capacity >= SIZE_MAX - 1) {
 			return ERANGE;
@@ -283,6 +282,7 @@ char *strbuf_into_str(strbuf_t *buf) {
 		errno = ERANGE;
 		return NULL;
 	} else {
+		assert(buf->used == buf->capacity);
 		str = realloc(buf->data, buf->used + 1);
 		if (!str) {
 			return NULL;
@@ -298,6 +298,7 @@ char *strbuf_into_str(strbuf_t *buf) {
 
 const char *strbuf_as_str(const strbuf_t *buf) {
 	if (buf->used == 0) {
+		// this allows null-buffers where { .capacity = 0, .used = 0, .data = NULL }
 		return "";
 	} else if (buf->used == buf->capacity) {
 		// should not happen since we always allocate at least one more byte
