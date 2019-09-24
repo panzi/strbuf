@@ -239,7 +239,7 @@ int strbuf_vprintf(strbuf_t *buf, const char *format, va_list ap) {
 		if (errnum != 0) {
 			return errnum;
 		}
-		int size2 = vsnprintf(buf->data, buf->capacity - buf->used, format, ap);
+		int size2 = vsnprintf(buf->data + buf->used, buf->capacity - buf->used, format, ap);
 		assert(size2 == size);
 		buf->used += size2;
 	} else if ((size_t)size == remaining_capacity) {
